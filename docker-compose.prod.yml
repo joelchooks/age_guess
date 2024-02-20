@@ -1,0 +1,52 @@
+version: "3.9"
+services:
+  web:
+    container_name: age_guess_web
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    
+    image: age_guess_web:v1
+    environment:
+      - PORT=8020
+    env_file:
+      - .env
+    ports:
+      - "8001:8020"
+    expose:
+      - 5432
+    command: sh -c "chmod +x /app/migrate.sh && sh /app/migrate.sh && /app/entrypoint.sh"
+    volumes:
+      - ./static:/app/static/
+      - ./media:/app/media/
+    depends_on:
+      - db
+
+  db:
+    container_name: age_guess_db
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+
+
+  nginx:
+    container_name: age_guess_nginx
+    build: ./nginx
+    volumes:
+      - ./static:/app/static/
+      - ./media:/app/media/
+      - ./.env:/etc/nginx/.env
+
+    ports:
+      - 1337:8020
+    depends_on:
+      - web
+
+
+volumes:
+  postgres_data:
+  gunicorn-logs:
