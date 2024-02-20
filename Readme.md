@@ -11,7 +11,7 @@ Description of the project.
 
 ### Development
 3. For Localhost, Run `docker-compose up --build` to start and build the application.
-4. Access the API at `http://localhost:1337/api/human-age/`.
+4. Access the API at `http://localhost:8001/api/human-age/`.
 5. To access the bash, Run `docker-compose -f exec bash`
 6. To view the logs, Run `docker logs -f`
 7. To run tests, Run `docker-compose -f run web /opt/venv/bin/python manage.py test`
