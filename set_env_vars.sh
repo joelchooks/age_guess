@@ -8,8 +8,8 @@ if [[ -z "$app_name" ]]; then
 fi
 
 # Copy .env.sample to .env
-cp .env.sample .env
-
+cp .env.sample ./heroku.env
+cat ./heroku.env
 # source .env.sample
 
 # while IFS='=' read -r name value; do
