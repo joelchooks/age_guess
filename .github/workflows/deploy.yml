@@ -68,5 +68,15 @@ jobs:
     runs-on: ubuntu-latest
     if: failure() || github.event_name == 'workflow_run'
     steps:
+      - name: Extract SHA
+        id: extract_sha
+        run: echo "::set-output name=truncated_sha::${{ github.sha }}"
+        
+      - name: Set HEROKU_APP_NAME
+        run: |
+          truncated_sha="${{ steps.extract_sha.outputs.truncated_sha }}"
+          HEROKU_APP_NAME="d-${truncated_sha:0:12}-pr"
+          echo "HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $GITHUB_ENV
+        
       - name: Destroy Heroku app
         run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
