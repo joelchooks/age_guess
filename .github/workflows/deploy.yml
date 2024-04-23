@@ -3,7 +3,7 @@ name: Deploy on Merge Request
 on:
   pull_request:
     branches:
-      - development
+      - master
 
 jobs:
   deploy:
