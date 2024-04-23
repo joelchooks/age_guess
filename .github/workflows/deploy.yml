@@ -37,7 +37,6 @@ jobs:
         run: heroku apps:create ${{ env.HEROKU_APP_NAME }}
 
       - name: Add comment to PR
-        if: github.event.action == 'opened' || github.event_name == 'synchronize' || github.event_name == 'reopened'
         run: |
           gh pr comment ${{ github.event.number }} --body '[Heroku app](https://dashboard.heroku.com/apps/${{ env.HEROKU_APP_NAME }}): https://${{ env.HEROKU_APP_NAME }}.herokuapp.com'
         env:
