@@ -19,6 +19,10 @@ jobs:
           HEROKU_APP_NAME="d-${truncated_sha:0:12}-pr"
           echo "HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $GITHUB_ENV
 
+      - name: Create .env file
+        run: |
+            cp .env.sample .env
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
