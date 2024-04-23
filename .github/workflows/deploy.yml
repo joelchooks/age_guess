@@ -16,15 +16,22 @@ jobs:
       - name: Install Heroku CLI
         run: curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Login to Heroku
-        run: heroku login -i
-
-      - name: Deploy to Heroku
+      - name: Login to Heroku (using API Key)
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku login --apikey ${{ secrets.HEROKU_API_KEY }}
+
+      - name: Create Heroku App (if not already existing)
+        run: heroku create ${{ github.repo.repo }}  # Optionally append a random string for uniqueness
+
+      - name: Set Git Config (Optional, for future convenience)
         run: |
-          heroku create
-          git push heroku HEAD:$GITHUB_HEAD_REF
+          git config --global url."https://api.heroku.com/".insteadOf  git@heroku.com
+          git config --global url."https://heroku.com/".insteadOf  git@heroku.com  # For compatibility with older Heroku setups
+
+      - name: Push Code to Heroku
+        run: git push -f heroku HEAD:$GITHUB_HEAD_REF  # Force push (optional, use with caution)
+
 
       - name: Run Post-Deployment Tasks
         run: |
