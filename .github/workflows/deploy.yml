@@ -6,10 +6,19 @@ on:
 jobs:
   heroku-pull-request:
     runs-on: ubuntu-latest
-    env:
-        HEROKU_APP_NAME: "d-${{ github.sha:0:12 }}-pr"  # Truncated SHA and prepended letter for uniqueness
+    # env:
+    #     HEROKU_APP_NAME: "d-${{ github.sha.substr(0, 12) }}-pr"  # Truncated SHA and prepended letter for uniqueness
 
     steps:
+      - name: Extract SHA
+        id: extract_sha
+        run: echo "::set-output name=truncated_sha::${{ github.sha }}"
+      - name: Set HEROKU_APP_NAME
+        run: |
+          truncated_sha="${{ steps.extract_sha.outputs.truncated_sha }}"
+          HEROKU_APP_NAME="d-${truncated_sha:0:12}-pr"
+          echo "HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
