@@ -62,3 +62,11 @@ jobs:
       - name: Destroy Heroku app
         if: github.event.action == 'closed'
         run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
+
+  cleanup:
+    needs: heroku-pull-request
+    runs-on: ubuntu-latest
+    if: failure() || github.event_name == 'workflow_run'
+    steps:
+      - name: Destroy Heroku app
+        run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
