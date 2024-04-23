@@ -7,7 +7,7 @@ jobs:
   heroku-pull-request:
     runs-on: ubuntu-latest
     env:
-        HEROKU_APP_NAME: ${{ github.sha }}-pr  # for uniqueness
+        HEROKU_APP_NAME: "d-${{ github.sha }}-pr" # for uniqueness
 
     steps:
       - name: Checkout repository
