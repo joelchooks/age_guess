@@ -7,13 +7,11 @@ if [[ -z "$app_name" ]]; then
   exit 1
 fi
 
-# Copy .env.sample to .env
-cp .env.sample ./heroku.env
-cat ./heroku.env
-# source .env.sample
+echo >> .env.sample
+source .env.sample
 
-# while IFS='=' read -r name value; do
-#   if [[ ! -z "$name" && ! -z "$value" ]]; then
-#     heroku config:set "$name"="$value" --app  "$app_name"
-#   fi
-# done < ".env.sample"
+while IFS='=' read -r name value; do
+  if [[ ! -z "$name" && ! -z "$value" ]]; then
+    heroku config:set "$name"="$value" --app  "$app_name"
+  fi
+done < ".env.sample"
