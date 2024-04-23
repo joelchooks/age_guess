@@ -71,12 +71,20 @@ jobs:
       - name: Extract SHA
         id: extract_sha
         run: echo "::set-output name=truncated_sha::${{ github.sha }}"
-        
+
       - name: Set HEROKU_APP_NAME
         run: |
           truncated_sha="${{ steps.extract_sha.outputs.truncated_sha }}"
           HEROKU_APP_NAME="d-${truncated_sha:0:12}-pr"
           echo "HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $GITHUB_ENV
-        
+
+      - name: Login to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+            heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+            heroku_email: joelchukks@gmail.com
+            heroku_app_name: ${{ env.HEROKU_APP_NAME }}
+            justlogin: true
+    
       - name: Destroy Heroku app
         run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
