@@ -1,11 +1,16 @@
-# #!/bin/bash
+#!/bin/bash
 
-# # Read variables from .env.sample (replace with actual location)
-# source .env.sample
+app_name="$1"
 
-# # Loop through each line and set Heroku config var
-# while IFS=':' read -r name value; do
-#   if [[ ! -z "$name" && ! -z "$value" ]]; then
-#     heroku config:set "$name"="$value" --app APP_NAME
-#   fi
-# done < ".env.sample"
+if [[ -z "$app_name" ]]; then
+  echo "Error: Heroku application name (APP_NAME) not provided!"
+  exit 1
+fi
+
+source .env.sample
+
+while IFS='=' read -r name value; do
+  if [[ ! -z "$name" && ! -z "$value" ]]; then
+    heroku config:set "$name"="$value" --app  "$app_name"
+  fi
+done < ".env.sample"
