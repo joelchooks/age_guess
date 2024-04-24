@@ -163,3 +163,4 @@ SWAGGER_SETTINGS = {
     },
     'SCHEMES': ['http', 'https'],
 }
+
