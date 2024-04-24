@@ -9,15 +9,24 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - name: Install dependencies (original approach)
-      run: |
-        apt-get update -y && apt-get install -y python3-pip curl  # Use `&&` for sequential execution
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Lint code
-      run: |
-        black . --exclude=".history/*" --exclude="venv/*" --line-length 79 --preview
-        # Only include ruff check if applicable to your project language
-        ruff check .
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          apt-get install -y python3-pip curl
+          pip3 install -r requirements.txt
+
+      - name: Lint code
+        run: |
+          black . --exclude=".history/*" --exclude="venv/*" --line-length 79 --preview
+          ruff check .
+
 
 
 
