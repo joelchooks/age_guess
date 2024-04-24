@@ -1,4 +1,4 @@
-set shell := ["bash", "-uc"]
+# set shell := ["bash", "-uc"]
 
 format:
 	black . --exclude=".history/*" --exclude="venv/*" --line-length 79 --preview
