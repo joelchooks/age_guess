@@ -47,17 +47,17 @@ jobs:
         run: |
           bash ./set_env_vars.sh ${{ env.HEROKU_APP_NAME }}
         
-      - name: Get Heroku App URL
-        run: |
-            HEROKU_APP_URL=$(heroku info -s --app=${{ env.HEROKU_APP_NAME }} | grep web_url | cut -d= -f2)
-            echo "HEROKU_APP_URL=$HEROKU_APP_URL" >> $GITHUB_ENV
+      # - name: Get Heroku App URL
+      #   run: |
+      #       HEROKU_APP_URL=$(heroku info -s --app=${{ env.HEROKU_APP_NAME }} | grep web_url | cut -d= -f2)
+      #       echo "HEROKU_APP_URL=$HEROKU_APP_URL" >> $GITHUB_ENV
   
 
-      - name: Add comment to PR
-        run: |
-          gh pr comment ${{ github.event.number }} --body 'MR deployment started. Server can be found at: https://${{ env.HEROKU_APP_URL }}.herokuapp.com'
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
+      # - name: Add comment to PR
+      #   run: |
+      #     gh pr comment ${{ github.event.number }} --body 'MR deployment started. Server can be found at: ${{ env.HEROKU_APP_URL }}'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
 
 
       - name: Add Heroku remote
