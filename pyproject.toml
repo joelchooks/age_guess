@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "my-test"
+version = "0.1.0"
+description = "None"
+authors = ["joelchooks <joelchukks@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "5.0.2"
+django-cors-headers = "4.3.1"
+djangorestframework = "3.14.0"
+drf-yasg = "1.21.7"
+gunicorn = "21.2.0"
+psycopg = "3.1.18"
+psycopg2-binary = "2.9.9"
+python-decouple = "3.8"
+requests = "2.31.0"
+dj-database-url = "^2.1.0"
+faker = "^24.11.0"
+loguru = "^0.7.2"
+ruff = "0.1.5"
+
+
+[tool.poetry.group.dev.dependencies]
+django = "5.0.2"
+django-cors-headers = "4.3.1"
+djangorestframework = "3.14.0"
+drf-yasg = "1.21.7"
+gunicorn = "21.2.0"
+psycopg = "3.1.18"
+psycopg2-binary = "2.9.9"
+python-decouple = "3.8"
+requests = "2.31.0"
+dj-database-url = "^2.1.0"
+faker = "^24.11.0"
+loguru = "^0.7.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

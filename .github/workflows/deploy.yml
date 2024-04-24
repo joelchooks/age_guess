@@ -53,13 +53,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
           
 
-      - name: Login to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_email: joelchukks@gmail.coms
-          heroku_app_name: ${{ env.HEROKU_APP_NAME }}
-          justlogin: true
+      # - name: Login to Heroku
+      #   uses: akhileshns/heroku-deploy@v3.12.12
+      #   with:
+      #     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+      #     heroku_email: joelchukks@gmail.com
+      #     heroku_app_name: ${{ env.HEROKU_APP_NAME }}
+      #     justlogin: true
 
       - name: Create Heroku app
         run: heroku apps:create ${{ env.HEROKU_APP_NAME }}
