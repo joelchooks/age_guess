@@ -2,8 +2,30 @@ name: Pull Request Deploy
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
+    branches:
+      - staging
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install flake8
+
+      - name: Lint Python code
+        run: |
+          # Run flake8 linting
+          flake8 .
+
   heroku-pull-request:
     runs-on: ubuntu-latest
 
@@ -35,7 +57,7 @@ jobs:
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_email: joelchukks@gmail.com
+          heroku_email: joelchukks@gmail.coms
           heroku_app_name: ${{ env.HEROKU_APP_NAME }}
           justlogin: true
 
