@@ -68,8 +68,8 @@ jobs:
           heroku run python manage.py createsuperuser --noinput --username admin --first_name admin --last_name admin --app=${{ env.HEROKU_APP_NAME }}
 
         
-      - name: Start server on Heroku
-        run: heroku ps:scale web=1 --app=${{ env.HEROKU_APP_NAME }}
+      # - name: Start server on Heroku
+      #   run: heroku ps:scale web=1 --app=${{ env.HEROKU_APP_NAME }}
         
       - name: Add comment to PR
         run: |
