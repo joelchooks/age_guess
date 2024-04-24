@@ -65,6 +65,8 @@ jobs:
         run: |
           heroku run python manage.py makemigrations --app=${{ env.HEROKU_APP_NAME }}
           heroku run python manage.py migrate --noinput --app=${{ env.HEROKU_APP_NAME }}
+          heroku run web: python manage.py runserver
+
           # heroku run python manage.py createsuperuser --noinput --username admin --first_name admin --last_name admin --app=${{ env.HEROKU_APP_NAME }}
 
         

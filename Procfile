@@ -1,1 +1,2 @@
-web: gunicorn testproject.wsgi:application
+web: python manage.py runserver
+
