@@ -6,8 +6,6 @@ on:
 jobs:
   heroku-pull-request:
     runs-on: ubuntu-latest
-    # env:
-    #     HEROKU_APP_NAME: "d-${{ github.sha.substr(0, 12) }}-pr"  # Truncated SHA and prepended letter for uniqueness
 
     steps:
       - name: Extract SHA
@@ -51,11 +49,6 @@ jobs:
 
       - name: Push to Heroku
         run: git push heroku ${{ github.head_ref }}:master --force
-        
-      - name: Create .env file
-        run: |
-            cp .env.sample .env
-
 
       - name: Destroy Heroku app
         if: github.event.action == 'closed'
