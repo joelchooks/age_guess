@@ -71,14 +71,14 @@ jobs:
         if: github.event.action == 'synchronize'
         run: 
           echo "This is a synchronize event. The job will intentionally fail."
-          exit 1
+          fail "The deployment failed because it was a synchronize event. Please close and reopen the Pull Request."
             
       
       - name: Delete Heroku app if pull request is closed
         if: github.event.action == 'closed'
         run: |
           heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
-          exit 0
+          fail "The deployment failed because it was a closed event."
 
       - name: Delete Already open Heroku app if pull request is reopen
         if: github.event.action == 'reopened'
