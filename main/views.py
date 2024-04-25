@@ -25,22 +25,22 @@ class HumanAgeView(APIView):
         request_body=PersonNameSerializer,
         responses={
             status.HTTP_200_OK: openapi.Schema(type=openapi.TYPE_OBJECT),
-            status.HTTP_400_BAD_REQUEST: openapi.Schema(type=openapi.TYPE_OBJECT),
-        }
+            status.HTTP_400_BAD_REQUEST: openapi.Schema(
+                type=openapi.TYPE_OBJECT
+            ),
+        },
     )
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        name = serializer.validated_data.get('name')
+        name = serializer.validated_data.get("name")
 
         # Check if response is cached or request new data
         person_data = get_cached_request_response(name)
         response = {
-            'name': person_data.get("name"),
-            'age': person_data.get("age"),
-            'date_of_birth': person_data.get("date_of_birth")
-                        
+            "name": person_data.get("name"),
+            "age": person_data.get("age"),
+            "date_of_birth": person_data.get("date_of_birth"),
         }
         return Response(response, status=status.HTTP_200_OK)
-    

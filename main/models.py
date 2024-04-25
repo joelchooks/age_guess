@@ -1,8 +1,6 @@
 from django.core.cache import cache
-from django.db import models
 
 from .utils import fetch_age_from_agify
-
 
 
 def get_cached_request_response(name: str) -> dict:
@@ -21,7 +19,7 @@ def get_cached_request_response(name: str) -> dict:
             response = {
                 "name": name,
                 "age": age,
-                "date_of_birth": date_of_birth
+                "date_of_birth": date_of_birth,
             }
             # Cache the result with the cache key
             cache.set(cache_key, response)
@@ -29,6 +27,3 @@ def get_cached_request_response(name: str) -> dict:
             return {}
 
     return response
-
-
-   
