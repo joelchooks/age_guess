@@ -37,13 +37,6 @@ jobs:
     needs: lint
 
     steps:
-      - name: Check if event type is 'synchronize'
-        if: github.event.action == 'synchronize'
-        run: 
-          echo "This is a synchronize event. The job will intentionally fail."
-          gh pr comment ${{ github.event.number }} --body 'The deployment failed because it was a synchronize event. Please close and reopen the Pull Request.'
-          exit 1
-        
 
       - name: Extract SHA
         id: extract_sha
@@ -59,13 +52,6 @@ jobs:
         with:
           fetch-depth: ${{ github.event.action == 'closed' && 1 || 0 }}
           ref: ${{ github.event.action != 'closed' && github.head_ref || '' }}
-
-
-      - name: Add First comment to PR
-        run: |
-          gh pr comment ${{ github.event.number }} --body 'First Commits SHA is ${{ github.sha }}'
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
           
 
       - name: Login to Heroku
@@ -79,6 +65,14 @@ jobs:
       - name: Clean Up App Above 5 hours
         run: |
             bash ./cleanup_heroku_apps.sh 
+
+
+      - name: Check if event type is 'synchronize'
+        if: github.event.action == 'synchronize'
+        run: 
+          echo "This is a synchronize event. The job will intentionally fail."
+          exit 1
+            
       
       - name: Delete Heroku app if pull request is closed
         if: github.event.action == 'closed'
@@ -90,6 +84,13 @@ jobs:
         if: github.event.action == 'reopened'
         run: |
           heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
+
+      
+      - name: Add First comment to PR
+        run: |
+          gh pr comment ${{ github.event.number }} --body 'First Commits SHA is ${{ github.sha }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
              
 
       - name: Create Heroku app
