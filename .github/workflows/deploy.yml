@@ -33,6 +33,7 @@ jobs:
 
   heroku-pull-request:
     runs-on: ubuntu-latest
+    needs: lint
 
     steps:
       - name: Extract SHA
@@ -68,7 +69,7 @@ jobs:
 
       - name: Clean Up App Above 5 hours
         run: |
-            bash ./cleanup_heroku_app.sh 
+            bash ./cleanup_heroku_apps.sh 
           
 
       - name: Create Heroku app
