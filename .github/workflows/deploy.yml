@@ -31,111 +31,116 @@ jobs:
 
 
 
-  # heroku-pull-request:
-  #   runs-on: ubuntu-latest
+  heroku-pull-request:
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Extract SHA
-  #       id: extract_sha
-  #       run: echo "::set-output name=truncated_sha::${{ github.sha }}"
-  #     - name: Set HEROKU_APP_NAME
-  #       run: |
-  #         truncated_sha="${{ steps.extract_sha.outputs.truncated_sha }}"
-  #         HEROKU_APP_NAME="seeds-test-${truncated_sha:0:12}-pr"
-  #         echo "HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $GITHUB_ENV
+    steps:
+      - name: Extract SHA
+        id: extract_sha
+        run: echo "::set-output name=truncated_sha::${{ github.sha }}"
+      - name: Set HEROKU_APP_NAME
+        run: |
+          truncated_sha="${{ steps.extract_sha.outputs.truncated_sha }}"
+          HEROKU_APP_NAME="seeds-test-${truncated_sha:0:12}-pr"
+          echo "HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $GITHUB_ENV
 
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
-  #       with:
-  #         fetch-depth: ${{ github.event.action == 'closed' && 1 || 0 }}
-  #         ref: ${{ github.event.action != 'closed' && github.head_ref || '' }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: ${{ github.event.action == 'closed' && 1 || 0 }}
+          ref: ${{ github.event.action != 'closed' && github.head_ref || '' }}
 
 
-  #     - name: Add First comment to PR
-  #       run: |
-  #         gh pr comment ${{ github.event.number }} --body 'First Commits SHA is ${{ github.sha }}'
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
+      - name: Add First comment to PR
+        run: |
+          gh pr comment ${{ github.event.number }} --body 'First Commits SHA is ${{ github.sha }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
           
 
-  #     # - name: Login to Heroku
-  #     #   uses: akhileshns/heroku-deploy@v3.12.12
-  #     #   with:
-  #     #     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-  #     #     heroku_email: joelchukks@gmail.com
-  #     #     heroku_app_name: ${{ env.HEROKU_APP_NAME }}
-  #     #     justlogin: true
+      - name: Login to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_email: joelchukks@gmail.com
+          heroku_app_name: ${{ env.HEROKU_APP_NAME }}
+          justlogin: true
 
-  #     - name: Create Heroku app
-  #       run: heroku apps:create ${{ env.HEROKU_APP_NAME }}
+      - name: Clean Up App Above 5 hours
+        run: |
+            bash ./cleanup_heroku_app.sh 
+          
 
-  #     - name: Get Heroku App URL
-  #       run: |
-  #           HEROKU_APP_URL=$(heroku info -s --app=${{ env.HEROKU_APP_NAME }} | grep web_url | cut -d= -f2)
-  #           echo "HEROKU_APP_URL=$HEROKU_APP_URL" >> $GITHUB_ENV
+      - name: Create Heroku app
+        run: heroku apps:create ${{ env.HEROKU_APP_NAME }}
+
+      - name: Get Heroku App URL
+        run: |
+            HEROKU_APP_URL=$(heroku info -s --app=${{ env.HEROKU_APP_NAME }} | grep web_url | cut -d= -f2)
+            echo "HEROKU_APP_URL=$HEROKU_APP_URL" >> $GITHUB_ENV
         
-  #     - name: Set Heroku environment variables
-  #       run: |
-  #         bash ./set_env_vars.sh ${{ env.HEROKU_APP_NAME }} ${{ env.HEROKU_APP_URL }} 
+      - name: Set Heroku environment variables
+        run: |
+          bash ./set_env_vars.sh ${{ env.HEROKU_APP_NAME }} ${{ env.HEROKU_APP_URL }} 
         
 
-  #     - name: Add comment to PR
-  #       run: |
-  #         gh pr comment ${{ github.event.number }} --body 'MR deployment started. Server can be found at: ${{ env.HEROKU_APP_URL }}'
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
+      - name: Add comment to PR
+        run: |
+          gh pr comment ${{ github.event.number }} --body 'MR deployment started. Server can be found at: ${{ env.HEROKU_APP_URL }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
 
 
-  #     - name: Add Heroku remote
-  #       run: heroku git:remote --app=${{ env.HEROKU_APP_NAME }}
+      - name: Add Heroku remote
+        run: heroku git:remote --app=${{ env.HEROKU_APP_NAME }}
         
-  #     - name: Push to Heroku
-  #       run: git push heroku ${{ github.head_ref }}:master --force
+      - name: Push to Heroku
+        run: git push heroku ${{ github.head_ref }}:master --force
         
         
-  #     - name: Run Django migrations
-  #       run: |
-  #         heroku run python manage.py makemigrations --app=${{ env.HEROKU_APP_NAME }}
-  #         heroku run python manage.py migrate --noinput --app=${{ env.HEROKU_APP_NAME }}
-  #         # heroku run python manage.py createsuperuser --noinput --username admin --first_name admin --last_name admin --app=${{ env.HEROKU_APP_NAME }}
+      - name: Run Django migrations
+        run: |
+          heroku run python manage.py makemigrations --app=${{ env.HEROKU_APP_NAME }}
+          heroku run python manage.py migrate --noinput --app=${{ env.HEROKU_APP_NAME }}
+          # heroku run python manage.py createsuperuser --noinput --username admin --first_name admin --last_name admin --app=${{ env.HEROKU_APP_NAME }}
 
         
-  #     # - name: Start server on Heroku
-  #     #   run: heroku ps:scale web=1 --app=${{ env.HEROKU_APP_NAME }}
+      # - name: Start server on Heroku
+      #   run: heroku ps:scale web=1 --app=${{ env.HEROKU_APP_NAME }}
         
-  #     - name: Add comment to PR
-  #       run: |
-  #         gh pr comment ${{ github.event.number }} --body 'Deployment finished. Instance is ready to use.'
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
+      - name: Add comment to PR
+        run: |
+          gh pr comment ${{ github.event.number }} --body 'Deployment finished. Instance is ready to use.'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
         
-  #     - name: Destroy Heroku app
-  #       if: github.event.action == 'closed'
-  #       run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
+      - name: Destroy Heroku app
+        if: github.event.action == 'closed'
+        run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
     
         
-  # cleanup:
-  #   needs: heroku-pull-request
-  #   runs-on: ubuntu-latest
-  #   if: failure() || github.event_name == 'workflow_run'
-  #   steps:
-  #     - name: Extract SHA
-  #       id: extract_sha
-  #       run: echo "::set-output name=truncated_sha::${{ github.sha }}"
+  cleanup:
+    needs: heroku-pull-request
+    runs-on: ubuntu-latest
+    if: failure() || github.event_name == 'workflow_run'
+    steps:
+      - name: Extract SHA
+        id: extract_sha
+        run: echo "::set-output name=truncated_sha::${{ github.sha }}"
 
-  #     - name: Set HEROKU_APP_NAME
-  #       run: |
-  #         truncated_sha="${{ steps.extract_sha.outputs.truncated_sha }}"
-  #         HEROKU_APP_NAME="d-${truncated_sha:0:12}-pr"
-  #         echo "HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $GITHUB_ENV
+      - name: Set HEROKU_APP_NAME
+        run: |
+          truncated_sha="${{ steps.extract_sha.outputs.truncated_sha }}"
+          HEROKU_APP_NAME="d-${truncated_sha:0:12}-pr"
+          echo "HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $GITHUB_ENV
 
-  #     - name: Login to Heroku
-  #       uses: akhileshns/heroku-deploy@v3.12.12
-  #       with:
-  #           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-  #           heroku_email: joelchukks@gmail.com
-  #           heroku_app_name: ${{ env.HEROKU_APP_NAME }}
-  #           justlogin: true
+      - name: Login to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+            heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+            heroku_email: joelchukks@gmail.com
+            heroku_app_name: ${{ env.HEROKU_APP_NAME }}
+            justlogin: true
     
-  #     - name: Destroy Heroku app
-  #       run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
+      - name: Destroy Heroku app
+        run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
