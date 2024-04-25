@@ -14,7 +14,7 @@ for app_name in $(heroku apps --json | jq -r '.[] | .name'); do
     cutoff_time=$(($current_time - 2*60))
 
     # If the app was created before the cutoff time, destroy it
-    if [ $creation_timestamp -lt $cutoff_time ]; then
+    if [ "$creation_timestamp -lt $cutoff_time" ]; then
         echo "Destroying app: $app_name"
         heroku apps:destroy --app=$app_name --confirm=$app_name
     fi
