@@ -9,6 +9,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -36,6 +37,14 @@ jobs:
     needs: lint
 
     steps:
+      - name: Check if event type is 'synchronize'
+        if: github.event.action == 'synchronize'
+        run: 
+          echo "This is a synchronize event. The job will intentionally fail."
+          gh pr comment ${{ github.event.number }} --body 'The deployment failed because it was a synchronize event. Please close and reopen the Pull Request.'
+          exit 1
+        
+
       - name: Extract SHA
         id: extract_sha
         run: echo "::set-output name=truncated_sha::${{ github.sha }}"
@@ -70,7 +79,18 @@ jobs:
       - name: Clean Up App Above 5 hours
         run: |
             bash ./cleanup_heroku_apps.sh 
-          
+      
+      - name: Delete Heroku app if pull request is closed
+        if: github.event.action == 'closed'
+        run: |
+          heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
+          exit 0
+
+      - name: Delete Already open Heroku app if pull request is reopen
+        if: github.event.action == 'reopened'
+        run: |
+          heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
+             
 
       - name: Create Heroku app
         run: heroku apps:create ${{ env.HEROKU_APP_NAME }}
