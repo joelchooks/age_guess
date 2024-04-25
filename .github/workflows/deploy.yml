@@ -69,7 +69,7 @@ jobs:
 
       - name: Check if event type is 'synchronize'
         if: github.event.action == 'synchronize'
-        run: 
+        run: |
           echo "This is a synchronize event. The job will intentionally fail."
           fail "The deployment failed because it was a synchronize event. Please close and reopen the Pull Request."
             
