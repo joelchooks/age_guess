@@ -1,11 +1,13 @@
 #!/bin/bash
 
 current_time=$(date +%s)
+echo $current_time
 
 for app_name in $(heroku apps --json | jq -r '.[] | .name'); do
     creation_time=$(heroku apps:info --json -a $app_name | jq -r '.created_at')
 
     creation_timestamp=$(date -d "$creation_time" +%s)
+    echo $creation_timestamp
 
     # Calculate the cutoff time (5 hours ago)
     # cutoff_time=$(($current_time - 5*60*60))
